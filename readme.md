@@ -18,9 +18,9 @@ sudo chmod a+x patcher.command
 + For Linux
 ```sh
 cd ~/Downloads
-# if you have wget
-curl https://raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/patcher-start.sh > patcher.sh
 # if you have curl
+curl https://raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/patcher-start.sh > patcher.sh
+# if you have wget
 wget -O ./patcher.sh https://raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/patcher-start.sh
 sudo chmod a+x patcher.sh
 ```
