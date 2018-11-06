@@ -187,6 +187,9 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
             if not Exists(pwd+"rar/unrar"):
                 exit()
             os.remove(pwd+"rar.tar.gz")
+            print(Color.YELLOW+"Done. On some systems, unrar may not work correctly on its")
+            print("first run. If you get 'permission denied' errors, try opening")
+            print("a new Terminal window."+Color.END)
 
         #start downloading updates
         print("-------------")
