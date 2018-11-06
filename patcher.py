@@ -4,13 +4,14 @@
 # Future is needed for Python 2 compatibility
 from __future__ import print_function, division, unicode_literals
 from future.standard_library import install_aliases; install_aliases()
-from urllib.request import urlopen, Request
 from builtins import int, bytes, str, object, range, input
-import os, plistlib, re, glob
+
+import os, plistlib, re, glob, tempfile, shutil, subprocess, math
+import tarfile, tqdm, requests
 
 version="Alpha0.1"
 PWD=os.sys.argv[1];KERNEL=os.sys.argv[2].lower();BASEURL=os.sys.argv[3]
-
+pythonversion=os.sys.version[0]
 # formatting
 class Color:
    PURPLE = '\033[95m'
@@ -98,12 +99,29 @@ def Exists(path):
     if os.path.isdir(path) == True: return True
     return False
 
-def DownloadWithProgress(url, path):
-    # USE URLLIB OR REQUESTS INSTEAD OF CURL/WGET
-    if KERNEL == "darwin":
-        os.system("curl -fSL \""+url+"\" > \""+path+"\"")
-    else:
-        os.system("wget -O \""+path+"\" \""+url+"\"")
+def Call(path, *arglist):
+    tmp = [path]
+    if len(arglist) > 0:
+        for x in arglist:
+            tmp.append(x)
+    return subprocess.check_output(tmp)
+
+def DownloadToFile(url, path):
+    r = requests.get(url, stream=True)
+    chunks = r.iter_content(chunk_size=1024)
+    size = int(math.floor(int(r.headers['Content-length'])/1024))
+    with open(path, 'wb') as f:
+        for chunk in tqdm.tqdm(chunks, total=size, unit="KB"):
+            if chunk:
+                f.write(chunk)
+
+def ExtractRarFile(source, dest):
+    files = patoolib.list_archive(source)
+    print(files)
+
+def DownloadToString(url, encoding="utf-8"):
+    r = requests.get(url)
+    return r.content.decode(encoding)
 
 def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
     clear()
@@ -113,13 +131,12 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
     pwd+="/"
 
     print(Color.GREEN+"P O K é M O N  U R A N I U M  S H E L L P A T C H E R  "+Color.END+"v"+version)
-    print("by "+Color.BOLD+"mocha "+Color.END+"(@ss.Cocoa#1750)\n")
+    print("by "+Color.BOLD+"mocha "+Color.END+"(@ss.Cocoa#1750) -- Python%s on %s\n" %(pythonversion, kernel))
 
     # Download the patchlist from the game's server
     # Not using bash so using the real one is much easier
     print("Grabbing patchlist...", end="")
-    with urlopen("http://pokemonuranium.org/Patches/patchlist.txt") as res:
-        response = res.read().decode('ascii')
+    response=DownloadToString("http://pokemonuranium.org/Patches/patchlist.txt")
     patches=Patchlist(response)
     print(Color.CYAN+" done"+Color.END)
 
@@ -128,8 +145,12 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
     neoncubever = 0
     if Exists(pwd+"neoncube.file"):
         with open(pwd+"neoncube.file", "r") as f:
-            neoncubever = int(f.read())
-            print(Color.CYAN+" done"+Color.END)
+            try:
+                neoncubever = int(f.read())
+                print(Color.CYAN+" done"+Color.END)
+            except:
+                print(Color.RED+" failed, assuming < "\
+                +str(patches.GetIDIndex()[0])+Color.END)
     else:
         print(Color.RED+" neoncube.file missing, assuming < "\
         +str(patches.GetIDIndex()[0])+Color.END)
@@ -158,18 +179,18 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
             else:
                 fname = "rarlinux-x64-5.6.1.tar.gz"
             print(Color.YELLOW+"Downloading https://www.rarlab.com/rar/"+fname+"..."+Color.END)
-            DownloadWithProgress("https://www.rarlab.com/rar/"+fname, "rar.tar.gz")
+            DownloadToFile("https://www.rarlab.com/rar/"+fname, pwd+"rar.tar.gz")
             if not Exists(pwd+"rar.tar.gz"):
                 exit()
             print(Color.YELLOW+"Extracting to rar/unrar ..."+Color.END)
-            os.system("tar -xzf \""+pwd+"rar.tar.gz\" \"rar/unrar\"")
+            Call("tar","-xzf",pwd+"rar.tar.gz", "rar/unrar")
             if not Exists(pwd+"rar/unrar"):
                 exit()
             os.remove(pwd+"rar.tar.gz")
 
         #start downloading updates
         print("-------------")
-        nfile = open(pwd+"neoncube.file", "w")
+        tempdir = tempfile.mkdtemp()+"/"
         for ID in requiredpatches:
             print(Color.YELLOW+Color.BOLD+"Downloading update "+Color.END, end="")
             print(Color.BOLD+str(requiredpatches.index(ID)+1), end="")
@@ -178,31 +199,39 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
             print(Color.YELLOW+" ("+patches.GetPatchName(ID)+") ..."+Color.END)
 
             currentfile=patches.GetPathFromID(ID)
-            DownloadWithProgress("http://pokemonuranium.org/Patches/"+currentfile, pwd+currentfile)
+            DownloadToFile("http://pokemonuranium.org/Patches/"+currentfile, tempdir+currentfile)
             print(Color.YELLOW+"Extracting... "+Color.END, end="")
-            # use subprocess, check stdout to make sure these actually completed
-            os.system(pwd+"rar/unrar x -o+ "+pwd+currentfile+" > /dev/null")
-            print(Color.YELLOW+"cleaning up... "+Color.END, end="")
-            os.remove(pwd+currentfile)
-            print(Color.CYAN+"done\n"+Color.END)
-            nfile.seek(0)
-            nfile.truncate()
-            nfile.write(str(ID))
-        nfile.close()
+            output = Call(pwd+"rar/unrar", "x", "-o+", tempdir+currentfile, pwd)
+            if bytes(output).find(b"All OK") == -1:
+                print("\n"+Color.RED+output)
+                print(Color.BOLD+"Extraction failed. Stopping."+Color.END)
+                exit()
+            print(Color.YELLOW+"cleaning up... \n"+Color.END)
+            os.remove(tempdir+currentfile)
+            with open(pwd+"neoncube.file", "w") as nfile:
+                nfile.seek(0)
+                nfile.truncate()
+                nfile.write(str(ID))
 
         print(Color.BOLD+"Checking for leftover files..."+Color.END)
         if Exists(pwd+".version"): # Python > Bash
             os.remove(pwd+".version")
         if Exists(pwd+".patchlist.plist"): # Python > Bash
             os.remove(pwd+".patchlist.plist")
-        found = glob.glob("*.rar")
+        found = glob.glob(pwd+"*.rar")
         if len(found) > 0:
             for f in found:
                 os.remove(f)
-        found = glob.glob("*.tar.gz")
+        found = glob.glob(tempdir+"*.rar")
         if len(found) > 0:
             for f in found:
                 os.remove(f)
+        found = glob.glob(pwd+"*.tar.gz")
+        if len(found) > 0:
+            for f in found:
+                os.remove(f)
+
+        shutil.rmtree(tempdir)
 
     print("-------------")
     print(Color.BOLD+Color.GREEN+"Your game is up to date."+Color.END)

@@ -23,10 +23,12 @@ TEXT_NONE=${FORMAT_NONE}${COLOR_NONE}
 
 function DownloadToFile() # URL, file
 {
-  if [ "$KERNELNAME" == "Darwin" ]; then
+  if [ "$(curl --help | grep Usage)" != "" ]; then
     curl -fsSL "$1" > "$2"
-  else
+  elif [ "$(wget -h | grep Usage)" != "" ]; then
     wget -O "$2" "$1"
+  else
+    Exit
   fi
 }
 function DownloadToStr() # URL
@@ -59,9 +61,6 @@ cd "$(dirname "$0")" # change to working directory in case of .command
 SetTitle "Pokémon Uranium Shellpatcher"
 
 # Make sure we're running from the game's directory
-if [ "$KERNELNAME" == "Darwin" ]; then
-  clear
-fi
 if [ ! -f "Uranium.exe" ]; then
   echo "${TEXT_STOP}Please run this script from inside of your Pokémon Uranium folder.${TEXT_NONE}"
   Exit
@@ -84,58 +83,51 @@ printf "..."
 
 if [ "$(cat "${PWD}/.patcher.py" | grep "import")" == "" ]; then
   echo " ${TEXT_STOP}Failed to download the patcher script.${TEXT_NONE}"
-  rm .patcher.py
   Exit
 fi
 echo "${TEXT_GO} done${TEXT_NONE}"
 
 # Pass to Python
-# Python 2
+# Which version do I have? macOS has 2 preinstalled, Ubuntu has 3
 if [ "$(python -c "print('test')")" != "" ]; then
-  if [ "$(python -m pip | grep Usage)" == "" ]; then # pip is missing
-    echo "${TEXT_WARN}pip is required in order to use Python's Future module.${TEXT_NONE}"
-    echo "${COLOR_YELLOW}Attempting to install it now...${COLOR_NONE}"
-    if [ "$KERNELNAME" == "Darwin" ]; then
-      sudo python -m easy_install pip
-    else #assuming Ubuntu
-      sudo apt install python-pip
-    fi
-    if [ "$(python -m pip | grep Usage)" == "" ]; then
-      Exit
-    fi
-  fi
-  #check for Future
-  if [ "$(python -m pip freeze | grep future)" == "" ]; then
-    echo "${TEXT_WARN}Installing Future...${TEXT_NONE}"
-    sudo -H python -m pip install future
-  fi
-  python "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
-
-# Python 3
+  command="python"
 elif [ "$(python3 -c "print('test')")" != "" ]; then
-  if [ "$(python3 -m pip | grep Usage)" == "" ]; then # pip is missing
-    echo "${TEXT_WARN}pip is required in order to use Python's Future module.${TEXT_NONE}"
-    echo "${COLOR_YELLOW}Attempting to install it now...${COLOR_NONE}"
-    if [ "$KERNELNAME" == "Darwin" ]; then
-      sudo python3 -m easy_install pip
-    else #assuming Ubuntu
-      sudo apt install python3-pip
-    fi
-    if [ "$(python3 -m pip | grep Usage)" == "" ]; then
-      Exit
-    fi
-  fi
-  #check for Future
-  if [ "$(python3 -m pip freeze | grep future)" == "" ]; then
-    echo "${TEXT_WARN}Installing Future...${TEXT_NONE}"
-    sudo -H python3 -m pip install future
-  fi
-  python3 "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
+  command="python3"
 else
-  echo "${TEXT_STOP}Could not find a Python installation in your PATH.${TEXT_NONE}"
-  echo "${COLOR_RED}Stopping.\n${COLOR_NONE}"
+  echo "${TEXT_STOP}Could not find an installation of Python.${TEXT_NONE}"
+  Exit
 fi
-if [ -e ".patcher.py" ]; then
-  rm .patcher.py
+echo "Using ${command}"
+if [ "$(${command} -m pip | grep Usage)" == "" ]; then # pip is missing
+  echo "${TEXT_WARN}pip is required in order install required Python dependencies${TEXT_NONE}"
+  echo "${COLOR_YELLOW}Attempting to install it now...${COLOR_NONE}"
+  if [ "$KERNELNAME" == "Darwin" ]; then
+    sudo $command -m easy_install pip
+  else #assuming Ubuntu
+    sudo apt install ${command}-pip -y
+  fi
+  if [ "$(${command} -m pip | grep Usage)" == "" ]; then
+    Exit
+  fi
 fi
+
+# Check for future
+if [ "$(${command} -m pip freeze | grep future)" == "" ]; then
+  echo "${TEXT_WARN}Attempting to install Future...${TEXT_NONE}"
+  sudo -H ${command} -m pip install future
+fi
+
+# Check for tqdm
+if [ "$(${command} -m pip freeze | grep tqdm)" == "" ]; then
+  echo "${TEXT_WARN}Attempting to install TQDM...${TEXT_NONE}"
+  sudo -H ${command} -m pip install tqdm
+fi
+
+# Check for requests
+if [ "$(${command} -m pip freeze | grep requests)" == "" ]; then
+  echo "${TEXT_WARN}Attempting to install Requests...${TEXT_NONE}"
+  sudo -H ${command} -m pip install requests
+fi
+
+$command "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
 Exit

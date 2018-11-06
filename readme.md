@@ -35,6 +35,6 @@ bash ./patcher.sh
 
 #### Requirements
 
-pip, python-future and Unrar. For macOS and Ubuntu, these can be installed for you.
+pip, python-future, requests, tqdm, and Unrar. For macOS and Ubuntu, these can be installed for you.
 For other linux distributions you may have to install pip with your own package
 manager.
