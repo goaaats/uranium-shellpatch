@@ -1,13 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Future is needed for Python 2 compatibility
+# Future is needed for Python 2/3 compatibility
 from __future__ import print_function, division, unicode_literals
 from future.standard_library import install_aliases; install_aliases()
 from builtins import int, bytes, str, object, range, input
 
-import os, plistlib, re, glob, tempfile, shutil, subprocess, math
-import tarfile, tqdm, requests
+import os, glob, tempfile, shutil, subprocess, math
+import tqdm, requests
 
 version="Alpha0.1"
 PWD=os.sys.argv[1];KERNEL=os.sys.argv[2].lower();BASEURL=os.sys.argv[3]
@@ -88,7 +88,7 @@ class Patchlist(object):
         if ID in self.__patchnames__:
             return self.__patchnames__[ID]
         elif ID in self.GetIDIndex():
-            return self.GetPathFromID(ID)
+            return self.GetPathFromID(ID).replace(".rar","")
         else: return "Missingno"
 
 def clear():
@@ -115,13 +115,9 @@ def DownloadToFile(url, path):
             if chunk:
                 f.write(chunk)
 
-def ExtractRarFile(source, dest):
-    files = patoolib.list_archive(source)
-    print(files)
-
 def DownloadToString(url, encoding="utf-8"):
     r = requests.get(url)
-    return r.content.decode(encoding)
+    return r.content.decode(encoding), r.headers
 
 def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
     clear()
@@ -136,7 +132,7 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
     # Download the patchlist from the game's server
     # Not using bash so using the real one is much easier
     print("Grabbing patchlist...", end="")
-    response=DownloadToString("http://pokemonuranium.org/Patches/patchlist.txt")
+    response=DownloadToString("http://pokemonuranium.org/Patches/patchlist.txt")[0]
     patches=Patchlist(response)
     print(Color.CYAN+" done"+Color.END)
 
