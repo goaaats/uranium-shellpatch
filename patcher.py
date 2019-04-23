@@ -9,7 +9,6 @@ from builtins import int, bytes, str, object, range, input
 import os, glob, tempfile, shutil, subprocess, math
 import tqdm, requests
 
-version="Alpha0.1"
 PWD=os.sys.argv[1];KERNEL=os.sys.argv[2].lower();BASEURL=os.sys.argv[3]
 pythonversion=os.sys.version[0]
 # formatting
@@ -33,10 +32,13 @@ class Patchlist(object):
     56: "1.2.0",
     57: "1.2.1",
     63: "1.2.2",
-    64: "1.2.2 (HotfixA)",
+    64: "1.2.2a",
     68: "1.2.3",
     69: "1.2.4",
-    70: "1.2.4 (HotfixA)"
+    70: "1.2.4a",
+    71: "1.2.4b",
+    72: "1.2.4c",
+    73: "1.2.4d"
     }
 
     def __init__(self, liststr):
@@ -126,8 +128,8 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
         local=True
     pwd+="/"
 
-    print(Color.GREEN+"P O K é M O N  U R A N I U M  S H E L L P A T C H E R  "+Color.END+"v"+version)
-    print("by "+Color.BOLD+"mocha "+Color.END+"(@ss.Cocoa#1750) -- Python%s on %s\n" %(pythonversion, kernel))
+    print(Color.GREEN+"P O K é M O N  U R A N I U M  S H E L L P A T C H E R  "+Color.END+"upd."+"4/22/2019")
+    print("from "+Color.BOLD+"Zoroark "+Color.END+"(@ゾロアーク♂#0571) -- Python%s on %s\n" %(pythonversion, kernel))
 
     # Download the patchlist from the game's server
     # Not using bash so using the real one is much easier

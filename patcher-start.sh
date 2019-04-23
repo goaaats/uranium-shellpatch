@@ -97,37 +97,38 @@ else
   echo "${TEXT_STOP}Could not find an installation of Python.${TEXT_NONE}"
   Exit
 fi
-echo "Using ${command}"
-if [ "$(${command} -m pip | grep Usage)" == "" ]; then # pip is missing
+abs="$(which ${command})"
+echo "Using ${command} (${abs})"
+if [ "$(${abs} -m pip | grep Usage)" == "" ]; then # pip is missing
   echo "${TEXT_WARN}pip is required in order install required Python dependencies${TEXT_NONE}"
   echo "${COLOR_YELLOW}Attempting to install it now...${COLOR_NONE}"
   if [ "$KERNELNAME" == "Darwin" ]; then
-    sudo $command -m easy_install pip
+    sudo ${abs} -m easy_install pip
   else #assuming Ubuntu
     sudo apt install ${command}-pip -y
   fi
-  if [ "$(${command} -m pip | grep Usage)" == "" ]; then
+  if [ "$(${abs} -m pip | grep Usage)" == "" ]; then
     Exit
   fi
 fi
 
 # Check for future
-if [ "$(${command} -m pip freeze | grep future)" == "" ]; then
+if [ "$(${abs} -m pip freeze | grep future)" == "" ]; then
   echo "${TEXT_WARN}Attempting to install Future...${TEXT_NONE}"
-  sudo -H ${command} -m pip install future
+  sudo -H ${abs} -m pip install future
 fi
 
 # Check for tqdm
-if [ "$(${command} -m pip freeze | grep tqdm)" == "" ]; then
+if [ "$(${abs} -m pip freeze | grep tqdm)" == "" ]; then
   echo "${TEXT_WARN}Attempting to install TQDM...${TEXT_NONE}"
-  sudo -H ${command} -m pip install tqdm
+  sudo -H ${abs} -m pip install tqdm
 fi
 
 # Check for requests
-if [ "$(${command} -m pip freeze | grep requests)" == "" ]; then
+if [ "$(${abs} -m pip freeze | grep requests)" == "" ]; then
   echo "${TEXT_WARN}Attempting to install Requests...${TEXT_NONE}"
-  sudo -H ${command} -m pip install requests
+  sudo -H ${abs} -m pip install requests
 fi
 
-$command "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
+$abs "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
 Exit
