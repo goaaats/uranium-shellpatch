@@ -129,7 +129,7 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
     pwd+="/"
 
     print(Color.GREEN+"P O K é M O N  U R A N I U M  S H E L L P A T C H E R  "+Color.END+"upd."+"4/22/2019")
-    print("from "+Color.BOLD+"Zoroark "+Color.END+"(@ゾロアーク♂#0571) -- Python%s on %s\n" %(pythonversion, kernel))
+    print("from "+Color.BOLD+"Zoroark "+Color.END+"(Telegram - @inori_z) -- Python%s on %s\n" %(pythonversion, kernel))
 
     # Download the patchlist from the game's server
     # Not using bash so using the real one is much easier
