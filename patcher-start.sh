@@ -4,6 +4,7 @@
 # Get the name of the kernel. Darwin for macOS, and Linux for linux
 # This gets passed to the Python script
 KERNELNAME=$(uname -a | cut -d ' ' -f 1)
+LINUXDISTRO=$(awk '/PRETTY_NAME/{ print $0 }' /etc/os-release | cut -c 14- | sed 's/.$//')
 BASE_URL=raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/
 #BASE_URL=pwd
 
@@ -108,8 +109,17 @@ if [ "$(${abs} -m pip | grep Usage)" == "" ]; then # pip is missing
   echo "${COLOR_YELLOW}Attempting to install it now...${COLOR_NONE}"
   if [ "$KERNELNAME" == "Darwin" ]; then
     sudo ${abs} -m easy_install pip
-  else #assuming Ubuntu
-    sudo apt install ${command}-pip -y
+  else 
+  	if [[ "$LINUXDISTRO" == *"buntu"* ]]; then
+  		echo -e "Detected ${LINUXDISTRO}"
+    		sudo apt install ${command}-pip -y
+    	elif [[ "$LINUXDISTRO" == *"Arch"* ]]; then
+    		echo -e "Detected ${LINUXDISTRO}"
+    		sudo pacman -S ${command}-pip
+    	else
+    		echo -e "${TEXT_STOP}Couldn't install ${command}-pip automatically - Please open an issue with a screenshot of this message!\nOS: ${LINUXDISTRO}${TEXT_NONE}"
+    		Exit
+    	fi
   fi
   if [ "$(${abs} -m pip | grep Usage)" == "" ]; then
     Exit
