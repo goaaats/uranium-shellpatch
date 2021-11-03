@@ -62,8 +62,15 @@ SetTitle "Pokémon Uranium Shellpatcher"
 
 # Make sure we're running from the game's directory
 if [ ! -f "Uranium.exe" ]; then
-  echo "${TEXT_STOP}Please run this script from inside of your Pokémon Uranium folder.${TEXT_NONE}"
-  Exit
+  echo -e "${TEXT_STOP}Please run this script from inside of your Pokémon Uranium folder.\n
+If you're using the MKXP-Z version and are sure that you're running this script from the correct folder, then you can just continue.\n${TEXT_NONE}"
+  read -r -p "Continue? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+  then
+    echo "Yes"
+  else
+    exit
+  fi
 fi
 
 printf "Grabbing scripts"
