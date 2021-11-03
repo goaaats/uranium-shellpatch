@@ -1,7 +1,8 @@
 ## Pokémon Uranium Shellpatcher
 
 An alternative option to the Neoncube patcher that fails to work on
-non-Windows operating systems.
+non-Windows operating systems. 
+#### Now Compatible with Uranium-MKXP-Z!
 
 Since it's partially shell script, you should make sure to give it executable permissions.
 If you are unable to launch it, it's probably because you haven't done this yet.
