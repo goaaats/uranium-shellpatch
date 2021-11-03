@@ -8,6 +8,12 @@ If you are unable to launch it, it's probably because you haven't done this yet.
 
 To download the script and make it executable, open a Terminal window and type (or copy/paste):
 
+#### Requirements
+
+pip, python-future, requests, tqdm, and Unrar. For macOS and Ubuntu, these can be installed for you.
+For other linux distributions you may have to install pip with your own package
+manager.
+
 + For macOS
 ```sh
 cd ~/Downloads
@@ -32,9 +38,3 @@ game).
 ```sh
 bash ./patcher.sh
 ```
-
-#### Requirements
-
-pip, python-future, requests, tqdm, and Unrar. For macOS and Ubuntu, these can be installed for you.
-For other linux distributions you may have to install pip with your own package
-manager.
