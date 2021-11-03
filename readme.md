@@ -8,6 +8,11 @@ If you are unable to launch it, it's probably because you haven't done this yet.
 
 To download the script and make it executable, open a Terminal window and type (or copy/paste):
 
+### This Project is a fork!!
+Full credit for the idea, pythonscript and most of the shellscript goes to ssmocha, also known as [goaaats](https://github.com/goaaats)
+
+The original can be found here (https://github.com/ssmocha/uranium-shellpatch)
+
 #### Requirements
 
 pip, python-future, requests, tqdm, and Unrar. For macOS and Ubuntu, these can be installed for you.
@@ -17,7 +22,7 @@ manager.
 + For macOS
 ```sh
 cd ~/Downloads
-curl https://raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/patcher-start.sh > patcher.command
+curl https://raw.githubusercontent.com/AnzoDK/uranium-shellpatch/master/patcher-start.sh > patcher.command
 sudo chmod a+x patcher.command
 ```
 
@@ -25,9 +30,9 @@ sudo chmod a+x patcher.command
 ```sh
 cd ~/Downloads
 # if you have curl
-curl https://raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/patcher-start.sh > patcher.sh
+curl https://raw.githubusercontent.com/AnzoDK/uranium-shellpatch/master/patcher-start.sh > patcher.sh
 # if you have wget
-wget -O ./patcher.sh https://raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/patcher-start.sh
+wget -O ./patcher.sh https://raw.githubusercontent.com/AnzoDK/uranium-shellpatch/master/patcher-start.sh
 sudo chmod a+x patcher.sh
 ```
 
