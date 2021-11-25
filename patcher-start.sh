@@ -145,11 +145,15 @@ if [ "$(${abs} -m pip freeze | grep requests)" == "" ]; then
 fi
 
 read -p "Disabling IPv6 could improve patching speed. Disable? [y/n]: " -n 1 -r
+echo
 if [[ ! $REPLY =~ ^[Yn]$ ]]; then
   sudo sysctl net.ipv6.conf.all.disable_ipv6=1
   echo "IPv6 has been disabled."
 else
   echo "IPv6 is not disabled."
 fi
+
+sleep 5
+
 $abs "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
 Exit
