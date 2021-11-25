@@ -145,7 +145,7 @@ if [ "$(${abs} -m pip freeze | grep requests)" == "" ]; then
 fi
 
 read -p "Disabling IPv6 could improve patching speed. Disable? [y/n]: " ipv6yesno
-if [[ "$ipv6yesno" == "y" || "$ipv6yesno" == "yes" || "$ipv6yesno" == "Y" || "$ipv6yesno" == "Yes" || "$ipv6yesno" == "YES" ]]; then
+if [ "$ipv6yesno" == "y" ] or [ "$ipv6yesno" == "yes" ] or [ "$ipv6yesno" == "Y" ] or [ "$ipv6yesno" == "Yes" ] or [ "$ipv6yesno" == "YES" ]; then
   sudo sysctl net.ipv6.conf.all.disable_ipv6=1
   echo "IPv6 has been disabled."
 else
