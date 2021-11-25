@@ -149,8 +149,10 @@ echo
 if [[ ! $REPLY =~ ^[Yn]$ ]]; then
   sudo sysctl net.ipv6.conf.all.disable_ipv6=1
   echo "IPv6 has been disabled."
-else
+elif [[! $REPLY =~ ^[Nn]$ ]]; then
   echo "IPv6 is not disabled."
+else
+  echo "Command not recognized. Continuing with IPv6 unchanged."
 fi
 
 sleep 5
