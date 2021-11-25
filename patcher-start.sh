@@ -5,7 +5,7 @@
 # This gets passed to the Python script
 KERNELNAME=$(uname -a | cut -d ' ' -f 1)
 LINUXDISTRO=$(awk '/PRETTY_NAME/{ print $0 }' /etc/os-release | cut -c 14- | sed 's/.$//')
-BASE_URL=raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/
+BASE_URL=raw.githubusercontent.com/AnzoDK/uranium-shellpatch/master/
 #BASE_URL=pwd
 
 #formatting
