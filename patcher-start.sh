@@ -143,6 +143,13 @@ if [ "$(${abs} -m pip freeze | grep requests)" == "" ]; then
   echo "${TEXT_WARN}Attempting to install Requests...${TEXT_NONE}"
   sudo -H ${abs} -m pip install requests
 fi
-
+echo "Disabling IPv6 could improve patching speed. Do you want to disable IPv6?"
+read ipv6yesno
+if [$varname == "y"] || [$varname == "yes"] || [$varname == "Y"] || [$varname == "Yes"]; then
+  sudo sysctl net.ipv6.conf.all.disable_ipv6=1
+  echo "IPv6 has been disabled."
+else
+  echo "IPv6 is not disabled."
+fi
 $abs "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
 Exit
