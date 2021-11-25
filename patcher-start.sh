@@ -5,7 +5,7 @@
 # This gets passed to the Python script
 KERNELNAME=$(uname -a | cut -d ' ' -f 1)
 LINUXDISTRO=$(awk '/PRETTY_NAME/{ print $0 }' /etc/os-release | cut -c 14- | sed 's/.$//')
-BASE_URL=raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/
+BASE_URL=raw.githubusercontent.com/AnzoDK/uranium-shellpatch/master/
 #BASE_URL=pwd
 
 #formatting
@@ -143,13 +143,17 @@ if [ "$(${abs} -m pip freeze | grep requests)" == "" ]; then
   echo "${TEXT_WARN}Attempting to install Requests...${TEXT_NONE}"
   sudo -H ${abs} -m pip install requests
 fi
-echo "Disabling IPv6 could improve patching speed. Do you want to disable IPv6?"
-read ipv6yesno
-if [$ipv6yesno == "y"] || [$ipv6yesno == "yes"] || [$ipv6yesno == "Y"] || [$ipv6yesno == "Yes"]; then
+
+read -p "Disabling IPv6 could improve patching speed. Disable? [y/n]: " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yn]$ ]]; then
   sudo sysctl net.ipv6.conf.all.disable_ipv6=1
   echo "IPv6 has been disabled."
 else
   echo "IPv6 is not disabled."
 fi
+
+sleep 5
+
 $abs "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
 Exit

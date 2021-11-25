@@ -128,7 +128,7 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
         local=True
     pwd+="/"
 
-    print(Color.GREEN+"P O K é M O N  U R A N I U M  S H E L L P A T C H E R  "+Color.END+"upd."+"4/22/2019")
+    print(Color.GREEN+"P O K é M O N  U R A N I U M  S H E L L P A T C H E R  "+Color.END+"upd."+"25/12/2021")
     print("from "+Color.BOLD+"Zoroark "+Color.END+"(Telegram - @inori_z) -- Python%s on %s\n" %(pythonversion, kernel))
     print("forked and maintained by AnzoDK and ilikerubikscubes")
 
@@ -237,9 +237,8 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
 
     print("-------------")
     print(Color.BOLD+Color.GREEN+"Your game is up to date."+Color.END)
+    print(Color.YELLOW + Color.BOLD + "Warning: " + Color.END + "IPv6 may have been disabled. Enable it again if you wish using " + Color.BLUE + Color.UNDERLINE + "sudo sysctl net.ipv6.conf.all.disable_ipv6=0"+ Color.END)
     print(Color.GREEN+"Please make sure to check the changelog:\n"\
     +Color.UNDERLINE+"http://pokemonuranium.org/Patches/news.html"+Color.END)
-    print(Color.YELLOW + Color.BOLD + "Warning: " + Color.END + "IPv6 may have been disabled. Enable it again if you wish using " + Color.BLUE + Color.UNDERLINE + "sudo sysctl net.ipv6.conf.all.disable_ipv6=0"+ Color.END
-
 
 main()
