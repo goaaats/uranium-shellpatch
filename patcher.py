@@ -239,7 +239,7 @@ def main(pwd=PWD, kernel=KERNEL, baseurl=BASEURL):
     print(Color.BOLD+Color.GREEN+"Your game is up to date."+Color.END)
     print(Color.GREEN+"Please make sure to check the changelog:\n"\
     +Color.UNDERLINE+"http://pokemonuranium.org/Patches/news.html"+Color.END)
-    print(Color.YELLOW + Color.BOLD + "Warning: " + Color.END + "IPv6 may have been disabled. Enable it again if you wish using " + Color.BLUE + Color.UNDERLINE + "sudo sysctl net.ipv6.conf.all.disable_ipv6=0"+ Color.END
+    print(Color.YELLOW + Color.BOLD + "Warning: " + Color.END + "IPv6 may have been disabled. Enable it again if you wish using " + Color.BLUE + Color.UNDERLINE + "sudo sysctl net.ipv6.conf.all.disable_ipv6=0"+ Color.END)
 
 
 main()
