@@ -102,9 +102,11 @@ else
   echo "${TEXT_STOP}Could not find an installation of Python.${TEXT_NONE}"
   Exit
 fi
+
 abs="$(which ${command})"
 echo "Using ${command} (${abs})"
-if [ "$(${abs} -m pip | grep Usage)" == "" ]; then # pip is missing
+#Checking for pip
+if [ "$(${abs} -m pip | grep Usage)" == "" ]; then
   echo "${TEXT_WARN}pip is required in order install required Python dependencies${TEXT_NONE}"
   echo "${COLOR_YELLOW}Attempting to install it now...${COLOR_NONE}"
   if [ "$KERNELNAME" == "Darwin" ]; then
@@ -146,11 +148,14 @@ fi
 
 read -p "Disabling IPv6 could improve patching speed. Disable? [y/n]: " -n 1 -r
 echo
-if [[ ! $REPLY =~ ^[Yn]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
   sudo sysctl net.ipv6.conf.all.disable_ipv6=1
   echo "IPv6 has been disabled."
+elif [[ $REPLY =~ ^[Nn]$ ]]; then
+	sudo sysctl net.ipv6.conf.all.disable_ipv6=0
+	echo "IPv6 has been enabled"
 else
-  echo "IPv6 is not disabled."
+	echo "Command not recognized. IPv6 configuration left unchanged."
 fi
 
 sleep 5
