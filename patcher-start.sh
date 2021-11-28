@@ -4,7 +4,8 @@
 # Get the name of the kernel. Darwin for macOS, and Linux for linux
 # This gets passed to the Python script
 KERNELNAME=$(uname -a | cut -d ' ' -f 1)
-BASE_URL=raw.githubusercontent.com/ssmocha/uranium-shellpatch/master/
+LINUXDISTRO=$(awk '/PRETTY_NAME/{ print $0 }' /etc/os-release | cut -c 14- | sed 's/.$//')
+BASE_URL=raw.githubusercontent.com/AnzoDK/uranium-shellpatch/master/
 #BASE_URL=pwd
 
 #formatting
@@ -62,8 +63,12 @@ SetTitle "Pokémon Uranium Shellpatcher"
 
 # Make sure we're running from the game's directory
 if [ ! -f "Uranium.exe" ]; then
-  echo "${TEXT_STOP}Please run this script from inside of your Pokémon Uranium folder.${TEXT_NONE}"
-  Exit
+  if [ -f "bin/mkxp-z.exe" ]; then
+  	echo -e "MKXP-Z Port Detected!"
+  else
+  	echo -e "${TEXT_STOP}Please run this script from inside of your Pokémon Uranium folder.\n${TEXT_NONE}"
+  	Exit
+  fi
 fi
 
 printf "Grabbing scripts"
@@ -97,15 +102,26 @@ else
   echo "${TEXT_STOP}Could not find an installation of Python.${TEXT_NONE}"
   Exit
 fi
+
 abs="$(which ${command})"
 echo "Using ${command} (${abs})"
-if [ "$(${abs} -m pip | grep Usage)" == "" ]; then # pip is missing
+#Checking for pip
+if [ "$(${abs} -m pip | grep Usage)" == "" ]; then
   echo "${TEXT_WARN}pip is required in order install required Python dependencies${TEXT_NONE}"
   echo "${COLOR_YELLOW}Attempting to install it now...${COLOR_NONE}"
   if [ "$KERNELNAME" == "Darwin" ]; then
     sudo ${abs} -m easy_install pip
-  else #assuming Ubuntu
-    sudo apt install ${command}-pip -y
+  else 
+  	if [[ "$LINUXDISTRO" == *"buntu"* ]]; then
+  		echo -e "Detected ${LINUXDISTRO}"
+    		sudo apt install ${command}-pip -y
+    	elif [[ "$LINUXDISTRO" == *"Arch"* ]]; then
+    		echo -e "Detected ${LINUXDISTRO}"
+    		sudo pacman -S ${command}-pip
+    	else
+    		echo -e "${TEXT_STOP}Couldn't install ${command}-pip automatically - Please open an issue with a screenshot of this message!\nOS: ${LINUXDISTRO}${TEXT_NONE}"
+    		Exit
+    	fi
   fi
   if [ "$(${abs} -m pip | grep Usage)" == "" ]; then
     Exit
@@ -129,6 +145,20 @@ if [ "$(${abs} -m pip freeze | grep requests)" == "" ]; then
   echo "${TEXT_WARN}Attempting to install Requests...${TEXT_NONE}"
   sudo -H ${abs} -m pip install requests
 fi
+
+read -p "Disabling IPv6 could improve patching speed. Disable? [y/n]: " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  sudo sysctl net.ipv6.conf.all.disable_ipv6=1
+  echo "IPv6 has been disabled."
+elif [[ $REPLY =~ ^[Nn]$ ]]; then
+	sudo sysctl net.ipv6.conf.all.disable_ipv6=0
+	echo "IPv6 has been enabled"
+else
+	echo "Command not recognized. IPv6 configuration left unchanged."
+fi
+
+sleep 5
 
 $abs "${PWD}/.patcher.py" "${PWD}" "$KERNELNAME" "$BASE_URL"
 Exit
